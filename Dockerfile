@@ -4,19 +4,15 @@ FROM php:8.2-apache
 # Enable Apache rewrite module
 RUN a2enmod rewrite
 
-# Install system dependencies
+# Install PHP extensions
 RUN apt-get update && apt-get install -y \
     git \
-    curl \
     zip \
     unzip \
-    nodejs \
-    npm \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
-    libpq-dev \
     && docker-php-ext-install pdo_mysql mbstring bcmath gd zip xml
 
 # Install Composer
@@ -30,12 +26,6 @@ COPY . .
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
-
-# Install Node dependencies and build React
-RUN npm install --force && npm run build
-
-# Copy React build to Laravel public (overwrite if necessary)
-RUN cp -r dist/* public/
 
 # Fix permissions for Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
