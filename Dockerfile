@@ -31,8 +31,14 @@ RUN composer install --no-dev --optimize-autoloader
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Set Apache DocumentRoot to Laravel public
-RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+# Copy Apache configuration
+COPY apache-config.conf /etc/apache2/sites-available/000-default.conf
+
+# Set ServerName to suppress warning
+RUN echo "ServerName maarat-complaints.onrender.com" >> /etc/apache2/apache2.conf
+
+# Enable Apache modules
+RUN a2enmod headers
 
 # Expose port 80
 EXPOSE 80
