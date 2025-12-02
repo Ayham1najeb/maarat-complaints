@@ -1,5 +1,6 @@
 # Use PHP 8.2 with Apache
 FROM php:8.2-apache
+# Version: 2.0 - Fixed index.php deployment issue
 
 # Enable Apache modules
 RUN a2enmod rewrite headers
