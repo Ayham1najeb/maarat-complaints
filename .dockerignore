@@ -17,3 +17,8 @@ node_modules
 
 # Docs
 README.md
+
+# Environment
+.env
+.env.example
+
