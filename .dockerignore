@@ -1,0 +1,56 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# IDE files
+.idea
+.vscode
+.fleet
+.nova
+.zed
+.phpactor.json
+
+# Documentation
+README.md
+*.md
+
+# Tests
+tests
+phpunit.xml
+.phpunit.result.cache
+.phpunit.cache
+
+# Node modules (if any)
+node_modules
+
+# Environment files (will be set by hosting)
+.env
+.env.backup
+.env.production
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Storage (will be created at runtime)
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+
+# Keep important storage directories structure
+!storage/logs/.gitignore
+!storage/framework/cache/.gitignore
+!storage/framework/sessions/.gitignore
+!storage/framework/views/.gitignore
+
+# Vendor (will be installed via composer)
+vendor
+
+# Build artifacts
+/public/build
+/public/hot

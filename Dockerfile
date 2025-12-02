@@ -21,15 +21,33 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
+# Copy composer files first
+COPY composer.json composer.lock ./
+
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader --no-scripts
+
 # Copy all project files
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Run post-autoload scripts
+RUN composer dump-autoload --optimize
+
+# Create necessary directories if they don't exist
+RUN mkdir -p storage/framework/cache \
+    && mkdir -p storage/framework/sessions \
+    && mkdir -p storage/framework/views \
+    && mkdir -p storage/logs \
+    && mkdir -p bootstrap/cache
 
 # Fix permissions for Laravel
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 /var/www/html/storage \
+    && chmod -R 775 /var/www/html/bootstrap/cache \
+    && chmod -R 755 /var/www/html/public
+
+# Verify index.php exists (for debugging)
+RUN ls -la /var/www/html/public/index.php || echo "WARNING: index.php not found!"
 
 # Copy Apache configuration
 COPY apache-config.conf /etc/apache2/sites-available/000-default.conf
