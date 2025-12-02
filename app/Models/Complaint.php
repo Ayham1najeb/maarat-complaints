@@ -24,6 +24,8 @@ class Complaint extends Model
         'title',
         'description',
         'location_address',
+        'latitude',
+        'longitude',
         'status',
         'priority',
         'tracking_number',

@@ -14,7 +14,8 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
-    && docker-php-ext-install pdo_mysql mbstring bcmath gd zip xml \
+    libpq-dev \
+    && docker-php-ext-install pdo_mysql pdo_pgsql mbstring bcmath gd zip xml \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
@@ -59,6 +60,12 @@ RUN echo "=== Contents of /var/www/html/public ===" \
         exit 1; \
     fi
 
+# Copy entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh && \
+    sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh
+
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+ENTRYPOINT ["docker-entrypoint.sh"]
+

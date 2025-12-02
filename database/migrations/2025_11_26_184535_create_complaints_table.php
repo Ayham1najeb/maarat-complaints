@@ -25,6 +25,8 @@ return new class extends Migration
 
             // الموقع
             $table->text('location_address'); // العنوان النصي
+            $table->decimal('latitude', 10, 8)->nullable(); // خط العرض
+            $table->decimal('longitude', 11, 8)->nullable(); // خط الطول
 
 
             // الحالة والأولوية
