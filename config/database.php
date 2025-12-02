@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Str;
 
+error_log('DEBUG: DB_HOST value is: "' . env('DB_HOST') . '"');
+error_log('DEBUG: DB_HOST length is: ' . strlen(env('DB_HOST')));
+
 return [
 
     /*
