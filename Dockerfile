@@ -3,7 +3,7 @@ FROM php:8.2-apache
 # Version: 2.0 - Fixed index.php deployment issue
 
 # Enable Apache modules
-RUN a2enmod rewrite headers
+RUN a2enmod rewrite headers expires deflate
 
 # Install system dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
@@ -46,12 +46,14 @@ COPY apache-config.conf /etc/apache2/sites-available/000-default.conf
 # Configure Apache
 RUN echo "ServerName maarat-complaints.onrender.com" >> /etc/apache2/apache2.conf
 
-# Debug: List public directory contents
+# Debug: List public directory contents and verify index.php
 RUN echo "=== Contents of /var/www/html/public ===" \
     && ls -la /var/www/html/public/ \
     && echo "=== End of listing ===" \
     && if [ -f /var/www/html/public/index.php ]; then \
         echo "✓ index.php found!"; \
+        chmod 644 /var/www/html/public/index.php; \
+        echo "✓ Permissions set to 644"; \
     else \
         echo "✗ ERROR: index.php NOT found!"; \
         exit 1; \
