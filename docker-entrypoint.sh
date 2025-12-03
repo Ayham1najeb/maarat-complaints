@@ -5,6 +5,10 @@ set -e
 echo "Running migrations..."
 php artisan migrate --force
 
+# Seed database with initial data
+echo "Seeding database..."
+php artisan db:seed --force
+
 # Create storage link
 echo "Creating storage link..."
 php artisan storage:link
