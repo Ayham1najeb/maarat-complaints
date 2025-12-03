@@ -13,6 +13,10 @@ php artisan db:seed --force
 echo "Creating storage link..."
 php artisan storage:link
 
+# Clear application cache
+echo "Clearing application cache..."
+php artisan cache:clear
+
 # Cache configuration
 echo "Caching configuration..."
 php artisan config:cache

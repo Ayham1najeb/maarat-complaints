@@ -14,30 +14,11 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. إنشاء مستخدمين
-        $admin = User::create([
-            'name' => 'المدير العام',
-            'email' => 'admin@complaint.sy',
-            'phone' => '0933123456',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
-        ]);
-
-        $employee = User::create([
-            'name' => 'موظف النظافة',
-            'email' => 'employee@complaint.sy',
-            'phone' => '0944123456',
-            'password' => Hash::make('password'),
-            'role' => 'employee',
-        ]);
-
-        $citizen = User::create([
-            'name' => 'محمد أحمد',
-            'email' => 'citizen@example.com',
-            'phone' => '0955123456',
-            'password' => Hash::make('password'),
-            'role' => 'citizen',
-        ]);
+        // Skip if data already exists
+        if (Category::count() > 0 && Area::count() > 0) {
+            $this->command->info('✅ البيانات موجودة مسبقاً!');
+            return;
+        }
 
         // 2. إنشاء المناطق
         $areas = [
@@ -52,7 +33,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($areas as $areaName) {
-            Area::create(['name' => $areaName]);
+            Area::firstOrCreate(['name' => $areaName]);
         }
 
         // 3. إنشاء التصنيفات
@@ -67,67 +48,14 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($categories as $index => $category) {
-            Category::create(array_merge($category, ['order' => $index + 1]));
+            Category::firstOrCreate(
+                ['name' => $category['name']],
+                array_merge($category, ['order' => $index + 1])
+            );
         }
 
-        // 4. إنشاء شكاوي تجريبية
-        $complaints = [
-            [
-                'citizen_name' => 'أحمد محمود',
-                'citizen_phone' => '0966111222',
-                'category_id' => 1,
-                'area_id' => 1,
-                'title' => 'تراكم القمامة في الشارع الرئيسي',
-                'description' => 'يوجد تراكم كبير للقمامة عند مدخل الحي منذ أسبوع',
-                'location_address' => 'شارع الجامع الكبير',
-                'status' => 'pending',
-                'priority' => 'high',
-            ],
-            [
-                'citizen_name' => 'فاطمة علي',
-                'citizen_phone' => '0977222333',
-                'category_id' => 2,
-                'area_id' => 2,
-                'title' => 'عطل في إنارة الشارع',
-                'description' => 'الإنارة العامة معطلة في شارعنا مما يسبب خطورة ليلاً',
-                'location_address' => 'شارع السوق',
-                'status' => 'in_review',
-                'priority' => 'urgent',
-            ],
-            [
-                'citizen_name' => 'خالد يوسف',
-                'citizen_phone' => '0988333444',
-                'category_id' => 3,
-                'area_id' => 3,
-                'title' => 'حفرة كبيرة في الطريق',
-                'description' => 'حفرة خطيرة في وسط الشارع تسبب حوادث',
-                'location_address' => 'شارع الشام',
-                'status' => 'in_progress',
-                'priority' => 'high',
-            ],
-            [
-                'citizen_name' => 'سارة حسن',
-                'citizen_phone' => '0999444555',
-                'category_id' => 4,
-                'area_id' => 4,
-                'title' => 'انقطاع المياه',
-                'description' => 'المياه مقطوعة منذ يومين في كامل الحي',
-                'location_address' => 'حي الجديدة',
-                'status' => 'resolved',
-                'priority' => 'urgent',
-                'resolved_at' => now()->subDays(1),
-            ],
-        ];
-
-        foreach ($complaints as $complaintData) {
-            Complaint::create(array_merge($complaintData, [
-                'tracking_number' => 'CM' . strtoupper(Str::random(10)),
-            ]));
-        }
-
-        $this->command->info('✅ تم إنشاء البيانات التجريبية بنجاح!');
-        $this->command->info('📧 Admin: admin@complaint.sy | Password: password');
-        $this->command->info('📧 Employee: employee@complaint.sy | Password: password');
-        $this->command->info('📧 Citizen: citizen@example.com | Password: password');
+        $this->command->info('✅ تم إنشاء البيانات الأساسية بنجاح!');
+        $this->command->info('📂 التصنيفات: ' . Category::count());
+        $this->command->info('📍 المناطق: ' . Area::count());
     }
 }
