@@ -42,9 +42,17 @@ class AdminStatisticsController extends Controller
         $totalCitizens = \App\Models\User::where('role', 'citizen')->count();
         $totalEmployees = \App\Models\User::where('role', 'employee')->count();
 
+        // إحصائيات الزوار
+        $totalVisits = \App\Models\Visit::count();
+        $todayVisits = \App\Models\Visit::whereDate('visited_at', today())->count();
+
         return response()->json([
             'success' => true,
             'data' => [
+                'visits' => [
+                    'total' => $totalVisits,
+                    'today' => $todayVisits,
+                ],
                 'users' => [
                     'total' => $totalUsers,
                     'citizens' => $totalCitizens,

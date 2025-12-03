@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'employee' => \App\Http\Middleware\EnsureUserIsEmployee::class,
         ]);
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+        $middleware->append(\App\Http\Middleware\TrackVisitors::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
