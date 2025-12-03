@@ -16,6 +16,17 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
+// Debug Route
+Route::get('/debug-data', function () {
+    return response()->json([
+        'categories_count' => \App\Models\Category::count(),
+        'areas_count' => \App\Models\Area::count(),
+        'categories' => \App\Models\Category::all(),
+        'areas' => \App\Models\Area::all(),
+        'cache_test' => \Illuminate\Support\Facades\Cache::get('categories_list'),
+    ]);
+});
+
 Route::middleware(['throttle:60,1'])->group(function () {
     // الشكاوي العامة
     Route::prefix('complaints')->group(function () {
