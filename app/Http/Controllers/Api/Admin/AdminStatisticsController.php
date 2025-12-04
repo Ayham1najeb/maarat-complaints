@@ -45,6 +45,9 @@ class AdminStatisticsController extends Controller
         // إحصائيات الزوار
         $totalVisits = \App\Models\Visit::count();
         $todayVisits = \App\Models\Visit::whereDate('visited_at', today())->count();
+        $monthlyVisits = \App\Models\Visit::where('visited_at', '>=', now()->startOfMonth())
+            ->distinct('ip_address')
+            ->count('ip_address');
 
         return response()->json([
             'success' => true,
@@ -52,6 +55,7 @@ class AdminStatisticsController extends Controller
                 'visits' => [
                     'total' => $totalVisits,
                     'today' => $todayVisits,
+                    'this_month' => $monthlyVisits,
                 ],
                 'users' => [
                     'total' => $totalUsers,
