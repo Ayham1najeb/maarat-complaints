@@ -8,6 +8,8 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Models\Visit;
 use Carbon\Carbon;
 
+use Illuminate\Support\Facades\Cache;
+
 class TrackVisitors
 {
     /**
@@ -17,24 +19,27 @@ class TrackVisitors
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Ignore API calls from the frontend app itself if possible, but for now we track all requests
-        // We can filter out some user agents or specific routes if needed.
-        // A simple way is to track unique IPs per day.
-
         $ip = $request->ip();
-        $today = Carbon::today();
+        $today = Carbon::today()->toDateString();
+        $cacheKey = "visitor_{$ip}_{$today}";
 
-        // Check if this IP has already visited today
-        $visitExists = Visit::where('ip_address', $ip)
-                            ->where('visited_at', $today)
-                            ->exists();
+        // Check if this IP has already been tracked today in cache
+        if (!Cache::has($cacheKey)) {
+            // Check database just in case (optional, but good for consistency if cache clears)
+            $visitExists = Visit::where('ip_address', $ip)
+                                ->whereDate('visited_at', Carbon::today())
+                                ->exists();
 
-        if (!$visitExists) {
-            Visit::create([
-                'ip_address' => $ip,
-                'user_agent' => $request->userAgent(),
-                'visited_at' => $today,
-            ]);
+            if (!$visitExists) {
+                Visit::create([
+                    'ip_address' => $ip,
+                    'user_agent' => $request->userAgent(),
+                    'visited_at' => Carbon::now(),
+                ]);
+            }
+
+            // Store in cache for 24 hours (or until end of day)
+            Cache::put($cacheKey, true, now()->addDay());
         }
 
         return $next($request);
